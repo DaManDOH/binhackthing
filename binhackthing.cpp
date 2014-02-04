@@ -41,14 +41,36 @@ int main( int argc, char* argv[] ) {
 		}
 		*/
 		binFile.close();
+
+
 		binFile.open(filepath, ios::ate | ios::binary);
 		binFile.seekg(-8, binFile.end);
+		cout << "binFile.tellg(): " << binFile.tellg() << '\n';
 		test = readBigEndianFloat(binFile);
 		cout << test << " (0x" << hex << *((unsigned *)&test) << dec << ")\n";
 		test = readBigEndianFloat(binFile);
-		cout << test << " (0x" << hex << *((unsigned *)&test) << dec << ")\n";
 		binFile.close();
+		cout << test << " (0x" << hex << *((unsigned *)&test) << dec << ")\n";
 		cout << flush;
+
+		unsigned long byteCount = colWidth*rowCount;
+		binFile.open(filepath, ios::binary);
+		binFile.seekg(8);
+		unsigned char * buffPtr = new unsigned char[byteCount];
+		binFile.read((char*)buffPtr, byteCount);
+		binFile.close();
+		cout << "buffPtr[" << byteCount-4 << "]: " << hex << (int)buffPtr[byteCount-4] << '\n';
+		cout << "buffPtr[" << byteCount-3 << "]: " << (int)buffPtr[byteCount-3] << '\n';
+		cout << "buffPtr[" << byteCount-2 << "]: " << (int)buffPtr[byteCount-2] << '\n';
+		cout << "buffPtr[" << byteCount-1 << "]: " << (int)buffPtr[byteCount-1] << dec << '\n';
+		vector<unsigned char> dynBuff;
+		dynBuff.reserve(byteCount);
+		dynBuff.assign(buffPtr, &buffPtr[byteCount]);
+		cout << "dynBuff.at(" << byteCount-4 << "): " << hex << (int)dynBuff.at(byteCount-4) << '\n';
+		cout << "dynBuff.at(" << byteCount-3 << "): " << (int)dynBuff.at(byteCount-3) << '\n';
+		cout << "dynBuff.at(" << byteCount-2 << "): " << (int)dynBuff.at(byteCount-2) << '\n';
+		cout << "dynBuff.at(" << byteCount-1 << "): " << (int)dynBuff.at(byteCount-1) << dec << '\n';
+		delete [] buffPtr;
 	}
 	return 0;
 }
